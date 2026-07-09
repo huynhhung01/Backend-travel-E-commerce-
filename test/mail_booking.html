@@ -1,0 +1,131 @@
+<div style="font-family: Arial, sans-serif; background-color: #f9fafc; padding: 20px; border-radius: 8px;">
+    <div
+        style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 30px;">
+        <h2 style="color: #2b6cb0; text-align: center;">🎉 Đặt tour thành công!</h2>
+
+        <p style="font-size: 16px; color: #333;">
+            Cảm ơn bạn đã tin tưởng và đặt tour tại
+            <strong style="color: #3182ce;">OurTravel</strong>.<br>
+            Dưới đây là thông tin chi tiết đơn đặt tour của bạn:
+        </p>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">🧾 Mã đơn đặt tour:</td>
+                <td style="padding: 8px;">${bookingQuery.bookingId}</td>
+            </tr>
+            <tr style="background-color: #f4f7fb;">
+                <td style="padding: 8px; font-weight: bold;">📍 Tên tour:</td>
+                <td style="padding: 8px;">${bookingQuery.date.tour.title}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">📅 Ngày khởi hành:</td>
+                <td style="padding: 8px;">${new Date(bookingQuery.date.startDate).toLocaleDateString('vi-VN')}</td>
+            </tr>
+            <tr style="background-color: #f4f7fb;">
+                <td style="padding: 8px; font-weight: bold;">👨‍👩‍👧 Số người lớn:</td>
+                <td style="padding: 8px;">${bookingQuery.numAdults}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">🧒 Số trẻ em:</td>
+                <td style="padding: 8px;">${bookingQuery.numChildren}</td>
+            </tr>
+            <tr style="background-color: #f4f7fb;">
+                <td style="padding: 8px; font-weight: bold;">💰 Tổng giá:</td>
+                <td style="padding: 8px; color: #e53e3e; font-weight: bold;">
+                    ${bookingQuery.totalPrice.toLocaleString('vi-VN')} VNĐ</td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 25px; font-size: 16px; color: #333;">
+            🎒 <strong>Chúc bạn có một chuyến đi tuyệt vời cùng OurTravel!</strong>
+        </p>
+
+        <p style="font-size: 14px; color: #718096; text-align: center; margin-top: 30px;">
+            — OurTravel Team —
+        </p>
+    </div>
+</div>
+
+
+<div style="font-family: Arial, sans-serif; background-color: #f9fafc; padding: 20px; border-radius: 8px;">
+    <div
+        style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 30px;">
+        <h2 style="color: #2b6cb0; text-align: center;">📢 Khách hàng đã đặt tour của bạn!</h2>
+
+        <p style="font-size: 16px; color: #333;">
+            Một khách hàng mới đã đặt tour qua hệ thống <strong style="color: #3182ce;">OurTravel</strong>.<br>
+            Dưới đây là thông tin chi tiết đơn đặt tour:
+        </p>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">👤 Khách hàng:</td>
+                <td style="padding: 8px;">${user.fullName}</td>
+            </tr>
+            <tr style="background-color: #f4f7fb;">
+                <td style="padding: 8px; font-weight: bold;">📧 Email:</td>
+                <td style="padding: 8px;">${user.email}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">📞 Số điện thoại:</td>
+                <td style="padding: 8px;">${user.phoneNumber}</td>
+            </tr>
+            <tr style="background-color: #f4f7fb;">
+                <td style="padding: 8px; font-weight: bold;">🧾 Mã đơn đặt tour:</td>
+                <td style="padding: 8px;">${bookingQuery.bookingId}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">📍 Tên tour:</td>
+                <td style="padding: 8px;">${bookingQuery.date.tour.title}</td>
+            </tr>
+            <tr style="background-color: #f4f7fb;">
+                <td style="padding: 8px; font-weight: bold;">📅 Ngày khởi hành:</td>
+                <td style="padding: 8px;">${new Date(bookingQuery.date.startDate).toLocaleDateString('vi-VN')}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">👨‍👩‍👧 Số người lớn:</td>
+                <td style="padding: 8px;">${bookingQuery.numAdults}</td>
+            </tr>
+            <tr style="background-color: #f4f7fb;">
+                <td style="padding: 8px; font-weight: bold;">🧒 Số trẻ em:</td>
+                <td style="padding: 8px;">${bookingQuery.numChildren}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">💰 Tổng giá:</td>
+                <td style="padding: 8px; color: #e53e3e; font-weight: bold;">
+                    ${bookingQuery.totalPrice.toLocaleString('vi-VN')} VNĐ</td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 25px; font-size: 16px; color: #333;">
+            📞 <strong>Vui lòng liên hệ với khách để xác nhận và hỗ trợ thêm chi tiết.</strong>
+        </p>
+
+        <p style="font-size: 14px; color: #718096; text-align: center; margin-top: 30px;">
+            — OurTravel Team —
+        </p>
+    </div>
+</div>
+
+<div style="font-family: Arial, sans-serif; padding: 16px; line-height: 1.6; color: #333;">
+    <h2 style="color: #d9534f;">Hủy Tour Thành Công</h2>
+
+    <p>Xin chào,</p>
+
+    <p>Yêu cầu hủy tour của bạn đã được xử lý thành công. Dưới đây là thông tin chi tiết:</p>
+
+    <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+        <p><strong>ID đơn đặt tour:</strong> {{bookingId}}</p>
+        <p><strong>Tên tour:</strong> {{tourTitle}}</p>
+    </div>
+
+    <p>Chúng tôi rất tiếc khi tour của bạn phải hủy. Nếu có bất kỳ yêu cầu hỗ trợ nào khác, bạn vui lòng liên hệ lại với
+        chúng tôi.</p>
+
+    <p>Cảm ơn bạn đã sử dụng <strong>OurTravel</strong>!</p>
+
+    <p>Trân trọng,<br>
+        <strong>OurTravel Team</strong>
+    </p>
+</div>

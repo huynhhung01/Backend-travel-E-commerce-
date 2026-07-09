@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>SSE InOutCoin Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        #payment-form,
+        #sse-status,
+        #qr-code-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        label,
+        input,
+        select,
+        button {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input,
+        select {
+            padding: 8px;
+            width: 250px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #qr-code-section {
+            display: none;
+            text-align: center;
+        }
+
+        #status {
+            font-weight: bold;
+            color: orange;
+        }
+
+        .success {
+            color: green !important;
+        }
+
+        .expired {
+            color: red !important;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Giao dịch In/Out Coin - SSE Demo</h1>
+
+    <div id="payment-form">
+        <h2>Bước 1: Tạo giao dịch In/Out</h2>
+
+        <label for="walletId">ID tài khoản ví:</label>
+        <input type="number" id="walletId" value="1" min="1" required />
+
+        <label for="amount">Số tiền giao dịch (>=1):</label>
+        <input type="number" id="amount" value="500" min="1" required />
+
+        <label for="type">Loại giao dịch:</label>
+        <select id="type">
+            <option value="NAP_TIEN">Nạp tiền</option>
+            <option value="RUT_TIEN">Rút tiền</option>
+        </select>
+
+        <button onclick="createTransaction()">Tạo giao dịch</button>
+    </div>
+
+    <hr>
+
+    <div id="qr-code-section">
+        <h2>Bước 2: Quét Mã QR</h2>
+        <p>Số tiền: <strong id="amount-display"></strong></p>
+        <p>Quét mã QR để hoàn tất giao dịch. Hệ thống sẽ tự động cập nhật trạng thái.</p>
+        <img id="qr-code-image" src="" alt="Mã QR"
+            style="width: 300px; border: 1px solid #ddd; padding: 5px; display: none;">
+    </div>
+
+    <hr>
+
+    <div id="sse-status">
+        <h2>Bước 3: Trạng thái giao dịch (SSE)</h2>
+        <div id="status">Chưa có giao dịch nào.</div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000';
+        const statusElement = document.getElementById('status');
+        const qrCodeSection = document.getElementById('qr-code-section');
+        const qrCodeImage = document.getElementById('qr-code-image');
+        const amountDisplay = document.getElementById('amount-display');
+        let currentSse = null;
+
+        async function createTransaction() {
+            const userWalletAccountId = parseInt(document.getElementById('walletId').value);
+            const amount = parseInt(document.getElementById('amount').value);
+            const type = document.getElementById('type').value;
+
+            if (!userWalletAccountId || !amount || amount <= 0) {
+                alert('Vui lòng nhập đầy đủ và hợp lệ thông tin giao dịch.');
+                return;
+            }
+
+            statusElement.textContent = 'Đang tạo giao dịch...';
+            statusElement.className = '';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/transactions/InOutcoin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userWalletAccountId, amount, type }),
+                });
+
+                if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
+
+                const result = await response.json();
+                console.log('Kết quả API:', result);
+
+                const { paymentId, status, transactionId, transaction_content } = result.data;
+
+                // 1️⃣ Hiển thị thông tin
+                amountDisplay.textContent = `${amount} VND`;
+                statusElement.textContent = `Trạng thái: ${status}. Đang chờ thanh toán...`;
+
+                // 2️⃣ Tạo mã QR thanh toán
+                const qrUrl = `https://qr.sepay.vn/img?acc=96247H06JB&bank=BIDV&amount=${amount}&des=${transaction_content}`;
+                qrCodeImage.src = qrUrl;
+                qrCodeImage.style.display = 'block';
+                qrCodeSection.style.display = 'block';
+
+                // 3️⃣ Lắng nghe SSE theo paymentId
+                startSseStream(paymentId);
+            } catch (error) {
+                console.error('Lỗi tạo giao dịch:', error);
+                statusElement.textContent = `Lỗi: Không thể tạo giao dịch.`;
+                qrCodeSection.style.display = 'none';
+            }
+        }
+
+        function startSseStream(paymentId) {
+            if (currentSse) currentSse.close();
+            console.log(`Lắng nghe SSE cho paymentId: ${paymentId}`);
+
+            currentSse = new EventSource(`${API_BASE_URL}/transactions/stream/${paymentId}`);
+
+            currentSse.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log('Sự kiện SSE:', data);
+                const newStatus = data.status;
+
+                statusElement.textContent = `Trạng thái: ${newStatus}`;
+                statusElement.className = '';
+
+                if (newStatus === 'SUCCESS') {
+                    statusElement.classList.add('success');
+                    alert('Giao dịch thành công ✅');
+                    currentSse.close();
+                } else if (newStatus === 'EXPIRED') {
+                    statusElement.classList.add('expired');
+                    alert('Giao dịch hết hạn ❌');
+                    currentSse.close();
+                }
+            };
+
+            currentSse.onerror = (error) => {
+                console.error('Lỗi SSE:', error);
+                statusElement.textContent = 'Lỗi kết nối SSE.';
+            };
+        }
+    </script>
+</body>
+
+</html>
